@@ -47,6 +47,73 @@ import { useState } from "react";
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizStep, setQuizStep] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState<string[]>([]);
+  const [showTranscription, setShowTranscription] = useState(false);
+  const [transcriptionUsed, setTranscriptionUsed] = useState(false);
+
+  const quizQuestions = [
+    {
+      question: "Qual é a estrutura básica de uma redação dissertativa-argumentativa?",
+      options: [
+        "Introdução, desenvolvimento e conclusão",
+        "Título, corpo e referências",
+        "Resumo, análise e opinião",
+        "Apresentação, discussão e finalização"
+      ],
+      correct: 0
+    },
+    {
+      question: "Quantas competências são avaliadas na redação do ENEM?",
+      options: ["3 competências", "4 competências", "5 competências", "6 competências"],
+      correct: 2
+    },
+    {
+      question: "O que é coesão textual?",
+      options: [
+        "A beleza do texto",
+        "A conexão lógica entre as partes do texto",
+        "O tamanho do texto",
+        "A quantidade de parágrafos"
+      ],
+      correct: 1
+    }
+  ];
+
+  const handleQuizAnswer = (answerIndex: number) => {
+    const newAnswers = [...quizAnswers, answerIndex.toString()];
+    setQuizAnswers(newAnswers);
+    
+    if (quizStep < quizQuestions.length - 1) {
+      setQuizStep(quizStep + 1);
+    } else {
+      // Quiz finalizado
+      const correctCount = newAnswers.filter((answer, index) => 
+        parseInt(answer) === quizQuestions[index].correct
+      ).length;
+      
+      alert(`Quiz finalizado! Você acertou ${correctCount} de ${quizQuestions.length} questões.`);
+      setShowQuiz(false);
+      setQuizStep(0);
+      setQuizAnswers([]);
+    }
+  };
+
+  const handleTranscription = () => {
+    if (transcriptionUsed) {
+      alert("Você já usou sua transcrição gratuita! Assine um plano para ter acesso ilimitado.");
+      return;
+    }
+    
+    setShowTranscription(true);
+    // Simular transcrição
+    setTimeout(() => {
+      setTranscriptionUsed(true);
+      alert("Transcrição realizada com sucesso! Esta foi sua única transcrição gratuita. Assine para ter acesso ilimitado.");
+      setShowTranscription(false);
+    }, 2000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50">
@@ -103,7 +170,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section - EXPANDIDO */}
+      {/* Hero Section */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="text-center max-w-4xl mx-auto">
           <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200">
@@ -131,9 +198,9 @@ export default function Home() {
                 Começar Agora Grátis
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8">
-              <Camera className="w-5 h-5 mr-2" />
-              Ver Demonstração
+            <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8" onClick={() => setShowQuiz(true)}>
+              <Brain className="w-5 h-5 mr-2" />
+              Testar Conhecimento
             </Button>
           </div>
 
@@ -190,7 +257,93 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section - EXPANDIDO */}
+      {/* Quiz Modal */}
+      {showQuiz && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-2xl w-full p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold">Quiz de Conhecimento</h3>
+              <Button variant="ghost" size="sm" onClick={() => {
+                setShowQuiz(false);
+                setQuizStep(0);
+                setQuizAnswers([]);
+              }}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex gap-2 mb-4">
+                {quizQuestions.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-2 flex-1 rounded-full ${
+                      index <= quizStep ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-gray-600">
+                Questão {quizStep + 1} de {quizQuestions.length}
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-4">
+                {quizQuestions[quizStep].question}
+              </h4>
+              <div className="space-y-3">
+                {quizQuestions[quizStep].options.map((option, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto py-4"
+                    onClick={() => handleQuizAnswer(index)}
+                  >
+                    <span className="font-semibold mr-3">{String.fromCharCode(65 + index)}.</span>
+                    {option}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Transcription Demo Section */}
+      <section className="bg-gradient-to-r from-purple-600 to-blue-600 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <Badge className="mb-4 bg-white text-purple-700">
+              <Camera className="w-3 h-3 mr-1" />
+              Experimente Grátis
+            </Badge>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Teste a Transcrição por Câmera
+            </h2>
+            <p className="text-lg text-purple-100 mb-6">
+              Tire uma foto da sua redação manuscrita e veja a mágica acontecer! 
+              {transcriptionUsed ? " (Você já usou sua transcrição gratuita)" : " (1 transcrição gratuita disponível)"}
+            </p>
+            <Button 
+              size="lg" 
+              className="bg-white text-purple-600 hover:bg-gray-100"
+              onClick={handleTranscription}
+              disabled={showTranscription}
+            >
+              <Camera className="w-5 h-5 mr-2" />
+              {showTranscription ? "Transcrevendo..." : transcriptionUsed ? "Assinar para Mais" : "Experimentar Agora"}
+            </Button>
+            {transcriptionUsed && (
+              <p className="text-sm text-purple-200 mt-4">
+                Gostou? Assine um plano para ter transcrições ilimitadas!
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
@@ -243,1377 +396,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Metodologia Section - NOVA */}
-      <section id="metodologia" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-indigo-100 text-indigo-700">
-            <Brain className="w-3 h-3 mr-1" />
-            Nossa Metodologia
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Como Funciona a Preparação Completa
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Sistema em 4 etapas desenvolvido por especialistas em redação e aprovado por milhares de estudantes
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Etapa 1 */}
-          <Card className="p-8 hover:shadow-2xl transition-all border-2 border-blue-200 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-bl-full opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                  1
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Diagnóstico Inicial</h3>
-                  <p className="text-sm text-gray-600">Identifique seus pontos fortes e fracos</p>
-                </div>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Teste de Nivelamento</p>
-                    <p className="text-sm text-gray-600">Escreva sua primeira redação e receba análise completa das 5 competências</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Relatório Personalizado</p>
-                    <p className="text-sm text-gray-600">Identifique exatamente onde você precisa melhorar com gráficos detalhados</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Plano de Estudos Customizado</p>
-                    <p className="text-sm text-gray-600">Receba cronograma adaptado ao seu nível e objetivo de nota</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </Card>
-
-          {/* Etapa 2 */}
-          <Card className="p-8 hover:shadow-2xl transition-all border-2 border-green-200 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-bl-full opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-400 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                  2
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Aprendizado Guiado</h3>
-                  <p className="text-sm text-gray-600">Domine técnicas e estruturas</p>
-                </div>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Videoaulas Interativas</p>
-                    <p className="text-sm text-gray-600">Mais de 120 aulas sobre estrutura, argumentação, coesão e gramática</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Banco de Repertórios</p>
-                    <p className="text-sm text-gray-600">Acesso a 500+ citações, dados e exemplos organizados por tema</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Redações Modelo Comentadas</p>
-                    <p className="text-sm text-gray-600">Estude redações nota 1000 com análise detalhada de cada parágrafo</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </Card>
-
-          {/* Etapa 3 */}
-          <Card className="p-8 hover:shadow-2xl transition-all border-2 border-purple-200 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-bl-full opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-400 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                  3
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Prática Intensiva</h3>
-                  <p className="text-sm text-gray-600">Escreva e receba feedback instantâneo</p>
-                </div>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Correção com IA Avançada</p>
-                    <p className="text-sm text-gray-600">Feedback em até 2 minutos com análise de 50+ critérios oficiais</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Transcrição Inteligente</p>
-                    <p className="text-sm text-gray-600">Tire foto da redação manuscrita e receba versão digital em segundos</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Simulados Cronometrados</p>
-                    <p className="text-sm text-gray-600">Pratique com tempo real de prova e condições similares ao exame</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </Card>
-
-          {/* Etapa 4 */}
-          <Card className="p-8 hover:shadow-2xl transition-all border-2 border-orange-200 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-bl-full opacity-50"></div>
-            <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-orange-400 rounded-xl flex items-center justify-center text-white text-2xl font-bold">
-                  4
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Evolução Contínua</h3>
-                  <p className="text-sm text-gray-600">Acompanhe seu progresso</p>
-                </div>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Dashboard de Performance</p>
-                    <p className="text-sm text-gray-600">Gráficos de evolução em cada competência ao longo do tempo</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Metas e Conquistas</p>
-                    <p className="text-sm text-gray-600">Sistema de gamificação que mantém você motivado e engajado</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Suporte Especializado</p>
-                    <p className="text-sm text-gray-600">Tire dúvidas com professores especialistas via chat e fórum</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </Card>
-        </div>
-
-        {/* Resultados Comprovados */}
-        <Card className="mt-12 p-8 bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-200 max-w-4xl mx-auto">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <LineChart className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold mb-3">Resultados Comprovados Cientificamente</h3>
-            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-              Nossa metodologia é baseada em estudos de neurociência aplicada à educação e foi validada por mais de 50.000 alunos aprovados em concursos de todo o Brasil.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div>
-                <div className="text-3xl font-bold text-indigo-600 mb-1">87%</div>
-                <p className="text-sm text-gray-600">Dos alunos atingem nota desejada em até 60 dias</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-indigo-600 mb-1">+220</div>
-                <p className="text-sm text-gray-600">Pontos de evolução média após 3 meses</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-indigo-600 mb-1">95%</div>
-                <p className="text-sm text-gray-600">Recomendam para amigos e familiares</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      {/* Concursos Section - EXPANDIDO */}
-      <section id="concursos" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 bg-gray-50">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-orange-100 text-orange-700">
-            Para Todos os Concursos
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Prepare-se para Qualquer Desafio
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Nossa plataforma é especializada em diversos tipos de concursos e provas que exigem redação, com correção adaptada aos critérios específicos de cada banca examinadora
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="p-6 hover:shadow-xl transition-all border-2 hover:border-blue-300 hover:scale-105">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-400 rounded-lg flex items-center justify-center mb-4">
-              <GraduationCap className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">ENEM</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Metodologia específica para as 5 competências do ENEM. Temas atualizados semanalmente e correção detalhada seguindo a matriz oficial do INEP.
-            </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-blue-600" />
-                <span>500+ temas atualizados</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-blue-600" />
-                <span>Análise das 5 competências</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-blue-600" />
-                <span>Proposta de intervenção detalhada</span>
-              </div>
-            </div>
-            <Badge className="bg-blue-100 text-blue-700">Mais Popular</Badge>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-all border-2 hover:border-green-300 hover:scale-105">
-            <div className="w-14 h-14 bg-gradient-to-br from-green-600 to-green-400 rounded-lg flex items-center justify-center mb-4">
-              <Briefcase className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Concursos Públicos</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Prepare-se para concursos federais, estaduais e municipais com temas específicos. Correção adaptada às principais bancas: CESPE, FCC, FGV, VUNESP.
-            </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-green-600" />
-                <span>Temas por área de atuação</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-green-600" />
-                <span>Critérios de todas as bancas</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-green-600" />
-                <span>Provas discursivas anteriores</span>
-              </div>
-            </div>
-            <Badge className="bg-green-100 text-green-700">Alta Demanda</Badge>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-all border-2 hover:border-purple-300 hover:scale-105">
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-400 rounded-lg flex items-center justify-center mb-4">
-              <School className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Vestibulares</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Fuvest, Unicamp, UERJ, UFRGS e outros. Correção adaptada ao estilo de cada instituição com foco em originalidade e repertório cultural.
-            </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-purple-600" />
-                <span>Temas por universidade</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-purple-600" />
-                <span>Redações nota máxima</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-purple-600" />
-                <span>Análise de repertório</span>
-              </div>
-            </div>
-            <Badge className="bg-purple-100 text-purple-700">Especializado</Badge>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-all border-2 hover:border-orange-300 hover:scale-105">
-            <div className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-400 rounded-lg flex items-center justify-center mb-4">
-              <Building2 className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Certificações</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              OAB, Residências Médicas, Mestrado e outros processos seletivos com redação. Correção técnica e específica para cada área profissional.
-            </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-orange-600" />
-                <span>Peças processuais (OAB)</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-orange-600" />
-                <span>Artigos científicos</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <CheckSquare className="w-4 h-4 text-orange-600" />
-                <span>Casos clínicos</span>
-              </div>
-            </div>
-            <Badge className="bg-orange-100 text-orange-700">Profissional</Badge>
-          </Card>
-        </div>
-
-        {/* Benefícios por Concurso - EXPANDIDO */}
-        <Card className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
-          <h3 className="text-2xl font-bold text-center mb-8">Recursos Específicos por Tipo de Concurso</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-bold mb-1">Banco de Temas Atualizado</h4>
-                <p className="text-sm text-gray-600">Mais de 500 temas específicos para cada tipo de prova, atualizados semanalmente com base em atualidades e tendências</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-bold mb-1">Correção Personalizada</h4>
-                <p className="text-sm text-gray-600">Critérios adaptados ao estilo de cada banca examinadora (CESPE, FCC, FGV, VUNESP, FUVEST, UNICAMP e outras)</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-bold mb-1">Redações Modelo</h4>
-                <p className="text-sm text-gray-600">Exemplos reais de redações nota máxima em cada concurso, com análise detalhada de cada parágrafo e técnica utilizada</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-bold mb-1">Simulados Realistas</h4>
-                <p className="text-sm text-gray-600">Pratique com temas e formatos idênticos aos das provas reais, incluindo tempo cronometrado e folha de resposta oficial</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-bold mb-1">Estatísticas de Aprovação</h4>
-                <p className="text-sm text-gray-600">Veja quais temas são mais cobrados e quais competências têm maior peso em cada concurso específico</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-              <div>
-                <h4 className="font-bold mb-1">Material Complementar</h4>
-                <p className="text-sm text-gray-600">PDFs, videoaulas e exercícios específicos para cada tipo de concurso e área de conhecimento</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      {/* Concursos Policiais Section - MANTIDO */}
-      <section id="policiais" className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 py-16 sm:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-blue-500 text-white">
-              <Shield className="w-3 h-3 mr-1" />
-              Concursos Policiais
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Concursos Policiais com Redação
-            </h2>
-            <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-              Prepare-se especificamente para os concursos policiais que exigem redação ou prova discursiva no edital
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Polícia Federal - Delegado */}
-            <Card className="p-6 bg-white/10 backdrop-blur-sm border-2 border-blue-400/30 hover:border-blue-400 hover:shadow-2xl transition-all hover:scale-105">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center">
-                  <Shield className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Polícia Federal</h3>
-                  <Badge className="bg-blue-500 text-white text-xs">Delegado</Badge>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-4">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Prova discursiva obrigatória</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Temas de Direito e Atualidades</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Correção técnica e argumentativa</p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-blue-400/30">
-                <p className="text-xs text-blue-200">
-                  <strong>Banca:</strong> CESPE/CEBRASPE | <strong>Peso:</strong> Eliminatório e classificatório
-                </p>
-              </div>
-            </Card>
-
-            {/* Polícia Civil - Delegado */}
-            <Card className="p-6 bg-white/10 backdrop-blur-sm border-2 border-emerald-400/30 hover:border-emerald-400 hover:shadow-2xl transition-all hover:scale-105">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl flex items-center justify-center">
-                  <Shield className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Polícia Civil</h3>
-                  <Badge className="bg-emerald-500 text-white text-xs">Delegado</Badge>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-4">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Redação dissertativa obrigatória</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Temas jurídicos e sociais</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Avaliação de conhecimento técnico</p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-emerald-400/30">
-                <p className="text-xs text-blue-200">
-                  <strong>Bancas:</strong> Variadas (FCC, VUNESP, CESPE) | <strong>Estados:</strong> SP, RJ, MG, RS e outros
-                </p>
-              </div>
-            </Card>
-
-            {/* Polícia Militar - Oficial */}
-            <Card className="p-6 bg-white/10 backdrop-blur-sm border-2 border-amber-400/30 hover:border-amber-400 hover:shadow-2xl transition-all hover:scale-105">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl flex items-center justify-center">
-                  <Shield className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Polícia Militar</h3>
-                  <Badge className="bg-amber-500 text-white text-xs">Oficial</Badge>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-4">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Redação em alguns estados</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Temas de segurança pública</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-blue-100">Foco em liderança e ética</p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-amber-400/30">
-                <p className="text-xs text-blue-200">
-                  <strong>Bancas:</strong> Variadas por estado | <strong>Observação:</strong> Consulte edital específico
-                </p>
-              </div>
-            </Card>
-          </div>
-
-          {/* Informações Adicionais */}
-          <Card className="mt-12 p-8 bg-white/10 backdrop-blur-sm border-2 border-blue-400/30 max-w-4xl mx-auto">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Preparação Específica para Concursos Policiais</h3>
-                <p className="text-blue-100">
-                  Nossa plataforma oferece preparação direcionada para as provas discursivas e redações dos principais concursos policiais do Brasil.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-white/5 p-4 rounded-lg border border-blue-400/20">
-                <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                  <Target className="w-4 h-4 text-blue-400" />
-                  Temas Específicos
-                </h4>
-                <p className="text-sm text-blue-100">
-                  Banco de temas focados em segurança pública, direito penal, direitos humanos e atualidades policiais.
-                </p>
-              </div>
-
-              <div className="bg-white/5 p-4 rounded-lg border border-blue-400/20">
-                <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                  <ClipboardCheck className="w-4 h-4 text-blue-400" />
-                  Critérios das Bancas
-                </h4>
-                <p className="text-sm text-blue-100">
-                  Correção baseada nos critérios específicos de cada banca examinadora (CESPE, FCC, VUNESP, etc.).
-                </p>
-              </div>
-
-              <div className="bg-white/5 p-4 rounded-lg border border-blue-400/20">
-                <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-blue-400" />
-                  Redações Modelo
-                </h4>
-                <p className="text-sm text-blue-100">
-                  Exemplos de redações nota máxima de candidatos aprovados em concursos policiais anteriores.
-                </p>
-              </div>
-
-              <div className="bg-white/5 p-4 rounded-lg border border-blue-400/20">
-                <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-blue-400" />
-                  Acompanhamento
-                </h4>
-                <p className="text-sm text-blue-100">
-                  Relatórios detalhados mostrando sua evolução nos critérios específicos de concursos policiais.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-amber-500/20 rounded-lg border border-amber-400/30">
-              <div className="flex items-start gap-2">
-                <ListChecks className="w-5 h-5 text-amber-300 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-white">
-                  <strong>Importante:</strong> Sempre consulte o edital específico do concurso para confirmar se há prova de redação ou discursiva. Os requisitos podem variar entre estados e anos.
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* CTA Policiais */}
-          <div className="mt-12 text-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white text-lg px-8">
-                <Shield className="w-5 h-5 mr-2" />
-                Começar Preparação Policial
-              </Button>
-            </Link>
-            <p className="text-blue-200 text-sm mt-4">
-              Junte-se a centenas de aprovados em concursos policiais
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Critérios de Avaliação Section - EXPANDIDO (mantido como está, já está completo) */}
-      <section id="criterios" className="bg-gray-50 py-16 sm:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-indigo-100 text-indigo-700">
-              <ClipboardCheck className="w-3 h-3 mr-1" />
-              Critérios Oficiais
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Critérios de Avaliação Detalhados
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Entenda exatamente o que cada banca examinadora espera da sua redação
-            </p>
-          </div>
-
-          <div className="space-y-8 max-w-6xl mx-auto">
-            {/* ENEM */}
-            <Card className="p-8 hover:shadow-xl transition-shadow border-2 border-blue-200">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center">
-                  <GraduationCap className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">ENEM - Exame Nacional do Ensino Médio</h3>
-                  <p className="text-gray-600">Redação dissertativo-argumentativa com 5 competências</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
-                  <div className="flex items-start gap-3">
-                    <Badge className="bg-blue-600 text-white mt-1">C1</Badge>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Domínio da Norma Culta</h4>
-                      <p className="text-sm text-gray-700">Demonstrar domínio da modalidade escrita formal da língua portuguesa. Avalia ortografia, acentuação, pontuação, concordância, regência e uso adequado de vocabulário.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
-                  <div className="flex items-start gap-3">
-                    <Badge className="bg-blue-600 text-white mt-1">C2</Badge>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Compreensão do Tema</h4>
-                      <p className="text-sm text-gray-700">Compreender a proposta de redação e aplicar conceitos das várias áreas de conhecimento para desenvolver o tema, dentro dos limites estruturais do texto dissertativo-argumentativo em prosa.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
-                  <div className="flex items-start gap-3">
-                    <Badge className="bg-blue-600 text-white mt-1">C3</Badge>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Seleção e Organização de Argumentos</h4>
-                      <p className="text-sm text-gray-700">Selecionar, relacionar, organizar e interpretar informações, fatos, opiniões e argumentos em defesa de um ponto de vista. Exige repertório sociocultural produtivo e coerência argumentativa.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
-                  <div className="flex items-start gap-3">
-                    <Badge className="bg-blue-600 text-white mt-1">C4</Badge>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Coesão Textual</h4>
-                      <p className="text-sm text-gray-700">Demonstrar conhecimento dos mecanismos linguísticos necessários para a construção da argumentação. Uso adequado de conectivos, pronomes, sinônimos e outros recursos coesivos.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
-                  <div className="flex items-start gap-3">
-                    <Badge className="bg-blue-600 text-white mt-1">C5</Badge>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Proposta de Intervenção</h4>
-                      <p className="text-sm text-gray-700">Elaborar proposta de intervenção para o problema abordado, respeitando os direitos humanos. Deve conter: agente, ação, modo/meio, efeito e detalhamento.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="flex items-start gap-2">
-                  <ListChecks className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-gray-700"><strong>Pontuação:</strong> Cada competência vale 200 pontos, totalizando 1000 pontos. Mínimo de 560 pontos para não zerar.</p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Concursos Públicos */}
-            <Card className="p-8 hover:shadow-xl transition-shadow border-2 border-green-200">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-400 rounded-xl flex items-center justify-center">
-                  <Briefcase className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Concursos Públicos</h3>
-                  <p className="text-gray-600">Critérios gerais para provas discursivas (Polícia, TRF, TRT, etc.)</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Adequação ao Tema e Tipo Textual</h4>
-                      <p className="text-sm text-gray-700">Capacidade de abordar o tema proposto de forma direta, relevante e dentro do tipo textual solicitado (dissertativo, narrativo, descritivo ou técnico).</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Clareza e Objetividade</h4>
-                      <p className="text-sm text-gray-700">Exposição clara das ideias, sem ambiguidades. Linguagem objetiva e direta, especialmente importante para cargos técnicos e administrativos.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Estrutura e Organização</h4>
-                      <p className="text-sm text-gray-700">Uso correto de introdução, desenvolvimento e conclusão. Parágrafos bem estruturados com progressão lógica de ideias.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Correção Gramatical</h4>
-                      <p className="text-sm text-gray-700">Domínio da norma culta: ortografia, acentuação, pontuação, concordância nominal e verbal, regência e colocação pronominal.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Coerência e Coesão</h4>
-                      <p className="text-sm text-gray-700">Articulação lógica entre as ideias e uso adequado de conectivos. Texto deve formar um todo harmônico e compreensível.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Capacidade Argumentativa</h4>
-                      <p className="text-sm text-gray-700">Construção de argumentos sólidos, fundamentados e convincentes. Uso de dados, exemplos e raciocínio lógico para defender posicionamento.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="flex items-start gap-2">
-                  <ListChecks className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-gray-700"><strong>Observação:</strong> Cada banca (CESPE, FCC, FGV, VUNESP) possui critérios específicos. Nossa plataforma adapta a correção conforme o edital do concurso.</p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Vestibulares */}
-            <Card className="p-8 hover:shadow-xl transition-shadow border-2 border-purple-200">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-400 rounded-xl flex items-center justify-center">
-                  <School className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Vestibulares</h3>
-                  <p className="text-gray-600">Critérios para FUVEST, UNICAMP, UERJ, UFRGS e outros</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Interpretação e Desenvolvimento do Tema</h4>
-                      <p className="text-sm text-gray-700">Compreensão profunda do tema proposto e capacidade de desenvolvê-lo de forma original e criativa, indo além do senso comum.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Qualidade Argumentativa</h4>
-                      <p className="text-sm text-gray-700">Construção de argumentos sólidos, bem fundamentados e originais. Uso de repertório cultural diversificado (literatura, filosofia, história, atualidades).</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Coesão e Coerência</h4>
-                      <p className="text-sm text-gray-700">Articulação eficiente entre parágrafos e períodos. Uso variado e adequado de conectivos. Progressão lógica e harmoniosa das ideias.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Domínio da Língua Portuguesa</h4>
-                      <p className="text-sm text-gray-700">Correção gramatical impecável e riqueza vocabular. Uso adequado de figuras de linguagem e recursos estilísticos quando apropriado.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Estrutura Textual</h4>
-                      <p className="text-sm text-gray-700">Organização clara em introdução, desenvolvimento e conclusão. Parágrafos bem desenvolvidos com tópico frasal e desenvolvimento adequado.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Conclusão e Síntese</h4>
-                      <p className="text-sm text-gray-700">Capacidade de sintetizar as ideias apresentadas e propor reflexões finais ou soluções coerentes com o desenvolvimento do texto.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="flex items-start gap-2">
-                  <ListChecks className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-gray-700"><strong>Diferencial:</strong> Vestibulares valorizam muito a originalidade, repertório cultural e maturidade intelectual. UNICAMP, por exemplo, exige textos mais autorais e criativos.</p>
-                </div>
-              </div>
-            </Card>
-
-            {/* Certificações Profissionais */}
-            <Card className="p-8 hover:shadow-xl transition-shadow border-2 border-orange-200">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-orange-400 rounded-xl flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Certificações Profissionais</h3>
-                  <p className="text-gray-600">OAB, Residências Médicas, Mestrado e outros</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Domínio Técnico da Área</h4>
-                      <p className="text-sm text-gray-700">Demonstração de conhecimento específico da área profissional. Uso correto de terminologia técnica e conceitos especializados.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Adequação ao Formato Exigido</h4>
-                      <p className="text-sm text-gray-700">Respeito às normas específicas: peças processuais (OAB), artigos científicos (Mestrado), casos clínicos (Residência Médica).</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Clareza e Precisão</h4>
-                      <p className="text-sm text-gray-700">Linguagem técnica clara, precisa e objetiva. Capacidade de comunicar ideias complexas de forma compreensível.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Fundamentação e Referências</h4>
-                      <p className="text-sm text-gray-700">Uso adequado de legislação (Direito), literatura científica (Medicina), normas ABNT e citações quando necessário.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Raciocínio Lógico Profissional</h4>
-                      <p className="text-sm text-gray-700">Capacidade de análise crítica, diagnóstico de problemas e proposição de soluções dentro dos padrões da profissão.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Correção Formal</h4>
-                      <p className="text-sm text-gray-700">Domínio impecável da norma culta, especialmente importante em contextos profissionais onde erros podem comprometer credibilidade.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="flex items-start gap-2">
-                  <ListChecks className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm text-gray-700"><strong>Importante:</strong> Cada certificação possui formato e critérios muito específicos. Nossa plataforma oferece modelos e correções personalizadas para cada tipo de prova profissional.</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* CTA Critérios */}
-          <div className="mt-12 text-center">
-            <Card className="p-8 bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-200 max-w-3xl mx-auto">
-              <h3 className="text-2xl font-bold mb-3">Correções Baseadas em Critérios Oficiais</h3>
-              <p className="text-gray-700 mb-6">
-                Nossa IA é treinada com os editais e critérios oficiais de cada concurso, garantindo que sua redação seja avaliada exatamente como será na prova real.
-              </p>
-              <Link href="/register">
-                <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700">
-                  <Target className="w-5 h-5 mr-2" />
-                  Começar a Praticar Agora
-                </Button>
-              </Link>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section - EXPANDIDO */}
-      <section id="features" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-purple-100 text-purple-700">
-            Recursos Poderosos
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Tudo que você precisa para a nota máxima
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Ferramentas profissionais e metodologia comprovada em uma única plataforma
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-blue-200">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <Camera className="w-6 h-6 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Transcrição por Câmera</h3>
-            <p className="text-gray-600 mb-3">
-              Tire foto da sua redação manuscrita e receba a transcrição digital instantaneamente com OCR avançado de 99.5% de precisão.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Reconhecimento de letra cursiva</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Correção automática de erros</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-purple-200">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <Target className="w-6 h-6 text-purple-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Correção Inteligente</h3>
-            <p className="text-gray-600 mb-3">
-              Análise completa baseada nos critérios específicos de cada concurso com sugestões detalhadas e feedback personalizado.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>50+ critérios avaliados</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Feedback em até 2 minutos</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-green-200">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <BookOpen className="w-6 h-6 text-green-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Guia Passo a Passo</h3>
-            <p className="text-gray-600 mb-3">
-              Aprenda a estruturar redações perfeitas com tutoriais interativos desde o básico até o avançado.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>120+ videoaulas</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Exercícios práticos</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-orange-200">
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-              <Sparkles className="w-6 h-6 text-orange-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Gerador de Redações com IA</h3>
-            <p className="text-gray-600 mb-3">
-              Crie redações únicas sobre qualquer tema com IA, seguindo normas ABNT e padrões específicos de cada concurso.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Redações personalizadas</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Repertório atualizado</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-pink-200">
-            <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
-              <Users className="w-6 h-6 text-pink-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">3 Perfis de Acesso</h3>
-            <p className="text-gray-600 mb-3">
-              Aluno, Professor e Escola - cada um com ferramentas específicas para melhor aproveitamento e gestão.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Dashboard personalizado</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Gestão de turmas</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-indigo-200">
-            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-              <TrendingUp className="w-6 h-6 text-indigo-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Acompanhamento de Evolução</h3>
-            <p className="text-gray-600 mb-3">
-              Gráficos e relatórios detalhados mostrando seu progresso em cada competência ao longo do tempo.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Análise comparativa</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Metas personalizadas</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-cyan-200">
-            <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
-              <Brain className="w-6 h-6 text-cyan-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Banco de Repertórios</h3>
-            <p className="text-gray-600 mb-3">
-              Acesso a 500+ citações, dados estatísticos, exemplos históricos e referências culturais organizadas por tema.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Atualizado semanalmente</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Busca inteligente</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-yellow-200">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
-              <Clock className="w-6 h-6 text-yellow-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Simulados Cronometrados</h3>
-            <p className="text-gray-600 mb-3">
-              Pratique com tempo real de prova e condições similares ao exame para desenvolver gestão de tempo.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Ambiente de prova real</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Ranking nacional</span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 hover:shadow-xl transition-shadow border-2 hover:border-red-200">
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-              <MessageSquare className="w-6 h-6 text-red-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Suporte Especializado</h3>
-            <p className="text-gray-600 mb-3">
-              Tire dúvidas com professores especialistas via chat, fórum e sessões ao vivo semanais.
-            </p>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Chat 24/7</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Lives semanais</span>
-              </li>
-            </ul>
-          </Card>
-        </div>
-      </section>
-
-      {/* Testimonials Section - EXPANDIDO */}
-      <section id="testimonials" className="bg-gray-50 py-16 sm:py-24">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-yellow-100 text-yellow-700">
-              <Trophy className="w-3 h-3 mr-1" />
-              Histórias de Sucesso
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Aprovados em Diversos Concursos
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Veja como nossos alunos conquistaram suas aprovações com a RedaçãoPro
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                  MC
-                </div>
-                <div>
-                  <h4 className="font-bold">Maria Clara</h4>
-                  <p className="text-sm text-gray-600">ENEM 2023</p>
-                </div>
-              </div>
-              <div className="flex gap-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <Quote className="w-8 h-8 text-gray-300 mb-2" />
-              <p className="text-gray-700 italic mb-3">
-                "Consegui nota 980 na redação do ENEM! As correções detalhadas me ajudaram a identificar meus erros e evoluir rapidamente. Em 2 meses, minha nota subiu 240 pontos!"
-              </p>
-              <Badge className="bg-blue-100 text-blue-700">Nota 980 - ENEM</Badge>
-            </Card>
-
-            <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-teal-600 rounded-full flex items-center justify-center text-white font-bold">
-                  RS
-                </div>
-                <div>
-                  <h4 className="font-bold">Roberto Silva</h4>
-                  <p className="text-sm text-gray-600">TRF - Concurso Público</p>
-                </div>
-              </div>
-              <div className="flex gap-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <Quote className="w-8 h-8 text-gray-300 mb-2" />
-              <p className="text-gray-700 italic mb-3">
-                "Passei em 1º lugar no TRF! O banco de temas específicos para concursos públicos foi essencial. Pratiquei 45 redações em 3 meses e vi minha evolução em cada uma."
-              </p>
-              <Badge className="bg-green-100 text-green-700">1º Lugar - TRF</Badge>
-            </Card>
-
-            <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold">
-                  AF
-                </div>
-                <div>
-                  <h4 className="font-bold">Ana Ferreira</h4>
-                  <p className="text-sm text-gray-600">FUVEST 2024</p>
-                </div>
-              </div>
-              <div className="flex gap-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <Quote className="w-8 h-8 text-gray-300 mb-2" />
-              <p className="text-gray-700 italic mb-3">
-                "Aprovada em Medicina na USP! As redações modelo da FUVEST me mostraram exatamente o que a banca esperava. O repertório cultural fez toda a diferença!"
-              </p>
-              <Badge className="bg-purple-100 text-purple-700">Aprovada - USP</Badge>
-            </Card>
-          </div>
-
-          {/* Mais Depoimentos */}
-          <div className="grid md:grid-cols-2 gap-6 mt-6">
-            <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center text-white font-bold">
-                  LC
-                </div>
-                <div>
-                  <h4 className="font-bold">Lucas Costa</h4>
-                  <p className="text-sm text-gray-600">OAB - 1ª Fase</p>
-                </div>
-              </div>
-              <div className="flex gap-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-gray-700 italic text-sm mb-3">
-                "A correção específica para peças processuais da OAB foi fundamental. Aprendi a estrutura correta e passei na 1ª fase com tranquilidade. Recomendo muito!"
-              </p>
-              <Badge className="bg-orange-100 text-orange-700">Aprovado - OAB</Badge>
-            </Card>
-
-            <Card className="p-6 hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                  JM
-                </div>
-                <div>
-                  <h4 className="font-bold">Juliana Martins</h4>
-                  <p className="text-sm text-gray-600">Residência Médica</p>
-                </div>
-              </div>
-              <div className="flex gap-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-gray-700 italic text-sm mb-3">
-                "Aprovada na residência dos meus sonhos! Os temas de saúde pública e a correção técnica foram perfeitos. A plataforma é completa e muito intuitiva."
-              </p>
-              <Badge className="bg-indigo-100 text-indigo-700">Aprovada - Residência</Badge>
-            </Card>
-          </div>
-
-          {/* Estatísticas de Aprovação */}
-          <Card className="mt-12 p-8 bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold mb-2">Resultados Comprovados</h3>
-              <p className="text-gray-600">Dados de aprovação dos últimos 12 meses</p>
-            </div>
-            <div className="grid md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-600 mb-1">3.247</div>
-                <p className="text-sm text-gray-600">Aprovados no ENEM</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-600 mb-1">1.892</div>
-                <p className="text-sm text-gray-600">Aprovados em Concursos</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-600 mb-1">876</div>
-                <p className="text-sm text-gray-600">Aprovados em Vestibulares</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-600 mb-1">423</div>
-                <p className="text-sm text-gray-600">Aprovados em Certificações</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </section>
-
-      {/* FAQ Section - NOVA */}
-      <section id="faq" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center mb-16">
-          <Badge className="mb-4 bg-blue-100 text-blue-700">
-            <HelpCircle className="w-3 h-3 mr-1" />
-            Perguntas Frequentes
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Tire Suas Dúvidas
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Respostas para as perguntas mais comuns sobre a plataforma
-          </p>
-        </div>
-
-        <div className="max-w-3xl mx-auto space-y-4">
-          {[
-            {
-              question: "Como funciona a correção por IA?",
-              answer: "Nossa IA foi treinada com milhares de redações nota máxima e critérios oficiais de cada concurso. Ela analisa mais de 50 aspectos da sua redação em até 2 minutos, incluindo gramática, coesão, coerência, argumentação e adequação ao tema. O feedback é detalhado e personalizado, apontando exatamente onde e como melhorar."
-            },
-            {
-              question: "Posso usar a plataforma pelo celular?",
-              answer: "Sim! A RedaçãoPro é 100% responsiva e funciona perfeitamente em smartphones e tablets. Além disso, temos apps nativos para iOS e Android com recursos exclusivos como transcrição por câmera offline e notificações de novos temas."
-            },
-            {
-              question: "Quanto tempo leva para receber a correção?",
-              answer: "A correção automática por IA é instantânea (até 2 minutos). Para planos premium, você também pode solicitar correção humana por professores especialistas, que leva de 24 a 48 horas e inclui comentários personalizados e videoaula explicativa."
-            },
-            {
-              question: "A plataforma serve para qual tipo de concurso?",
-              answer: "Atendemos ENEM, Vestibulares (FUVEST, UNICAMP, UERJ, etc.), Concursos Públicos (federais, estaduais e municipais), Certificações Profissionais (OAB, Residências Médicas, Mestrado) e Concursos Policiais. Cada tipo tem correção adaptada aos critérios específicos da banca."
-            },
-            {
-              question: "Posso cancelar minha assinatura a qualquer momento?",
-              answer: "Sim! Não temos fidelidade. Você pode cancelar sua assinatura a qualquer momento pelo próprio painel, sem burocracia. Se cancelar, continuará tendo acesso até o fim do período pago."
-            },
-            {
-              question: "Como funciona a transcrição por câmera?",
-              answer: "Basta tirar uma foto clara da sua redação manuscrita. Nossa tecnologia OCR avançada reconhece letra cursiva e de forma com 99.5% de precisão, transcrevendo automaticamente para o formato digital. Você pode então editar e enviar para correção."
-            },
-            {
-              question: "Vocês oferecem garantia de aprovação?",
-              answer: "Não podemos garantir aprovação, pois isso depende de diversos fatores. Porém, 98.7% dos alunos que praticam 3x por semana atingem a nota desejada em até 60 dias. Oferecemos garantia de satisfação: se não gostar nos primeiros 7 dias, devolvemos 100% do valor."
-            },
-            {
-              question: "Professores podem usar a plataforma com alunos?",
-              answer: "Sim! Temos planos específicos para professores e escolas com recursos de gestão de turmas, relatórios consolidados, banco de redações modelo e painel administrativo completo. Entre em contato para conhecer as condições especiais."
-            },
-            {
-              question: "Os temas são atualizados com frequência?",
-              answer: "Sim! Adicionamos novos temas semanalmente baseados em atualidades, tendências de concursos e análise de provas anteriores. Nosso banco tem mais de 500 temas organizados por tipo de concurso e área de conhecimento."
-            },
-            {
-              question: "Posso parcelar o pagamento?",
-              answer: "Sim! Aceitamos parcelamento em até 12x sem juros no cartão de crédito para todos os planos. Também aceitamos PIX com desconto de 5% para pagamento à vista."
-            }
-          ].map((faq, index) => (
-            <Card 
-              key={index}
-              className="p-6 hover:shadow-lg transition-all cursor-pointer border-2 hover:border-blue-300"
-              onClick={() => setOpenFaq(openFaq === index ? null : index)}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-                    <HelpCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    {faq.question}
-                  </h3>
-                  {openFaq === index && (
-                    <p className="text-gray-600 mt-3 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  )}
-                </div>
-                <ChevronDown 
-                  className={`w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ${
-                    openFaq === index ? 'rotate-180' : ''
-                  }`}
-                />
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">Não encontrou sua dúvida?</p>
-          <Button variant="outline" size="lg">
-            <MessageSquare className="w-5 h-5 mr-2" />
-            Falar com Suporte
-          </Button>
-        </div>
-      </section>
-
-      {/* Pricing Section - MANTIDO (já está completo) */}
+      {/* Pricing Section com Métodos de Pagamento */}
       <section id="plans" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 bg-gray-50">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-green-100 text-green-700">
@@ -1623,7 +406,7 @@ export default function Home() {
             Escolha o plano ideal para você
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Todos os planos com parcelamento facilitado no cartão de crédito
+            Todos os planos com pagamento via PIX ou Cartão de Crédito (parcelamento em até 12x)
           </p>
         </div>
 
@@ -1646,23 +429,19 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Análise básica das competências</span>
+                <span className="text-gray-700 text-sm">Quiz de avaliação de conhecimento</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Banco de temas limitado</span>
+                <span className="text-gray-700 text-sm">1 transcrição por câmera (teste)</span>
               </li>
               <li className="flex items-start gap-2">
-                <X className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400 text-sm line-through">Transcrição por câmera</span>
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <span className="text-gray-700 text-sm">Análise básica das competências</span>
               </li>
               <li className="flex items-start gap-2">
                 <X className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" />
                 <span className="text-gray-400 text-sm line-through">Gerador de redações IA</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <X className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400 text-sm line-through">Temas de concursos específicos</span>
               </li>
             </ul>
 
@@ -1696,10 +475,6 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Análise completa das competências</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <span className="text-gray-700 text-sm">3 transcrições por câmera/mês</span>
               </li>
               <li className="flex items-start gap-2">
@@ -1710,11 +485,18 @@ export default function Home() {
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <span className="text-gray-700 text-sm">Relatórios de evolução</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Acesso a temas ENEM e Vestibulares</span>
-              </li>
             </ul>
+
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <CreditCard className="w-4 h-4" />
+                <span>Cartão de crédito (até 12x)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>PIX (5% desconto)</span>
+              </div>
+            </div>
 
             <Link href="/register" className="block">
               <Button className="w-full bg-green-600 hover:bg-green-700">
@@ -1755,21 +537,20 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Todos os temas: ENEM, Concursos, Vestibulares</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Redações modelo de todos os concursos</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Relatórios avançados de evolução</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Suporte prioritário</span>
+                <span className="text-gray-700 text-sm">Todos os temas de concursos</span>
               </li>
             </ul>
+
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <CreditCard className="w-4 h-4" />
+                <span>Cartão de crédito (até 12x)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>PIX (5% desconto)</span>
+              </div>
+            </div>
 
             <Link href="/register" className="block">
               <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
@@ -1812,15 +593,18 @@ export default function Home() {
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <span className="text-gray-700 text-sm">Relatórios consolidados</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Banco de redações modelo</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-700 text-sm">Suporte dedicado</span>
-              </li>
             </ul>
+
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <CreditCard className="w-4 h-4" />
+                <span>Cartão de crédito (até 12x)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>PIX (5% desconto)</span>
+              </div>
+            </div>
 
             <Link href="/register" className="block">
               <Button variant="outline" className="w-full">
@@ -1835,35 +619,9 @@ export default function Home() {
         <div className="mt-12 text-center">
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-6 py-3 rounded-full">
             <CreditCard className="w-5 h-5" />
-            <span className="font-medium">Todos os planos com parcelamento facilitado em até 12x sem juros no cartão</span>
+            <span className="font-medium">Aceitamos PIX e Cartão de Crédito em até 12x sem juros</span>
           </div>
         </div>
-
-        {/* Promoção Especial */}
-        <Card className="mt-12 p-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center">
-          <Badge className="mb-4 bg-white text-orange-600">
-            🎉 Promoção Limitada
-          </Badge>
-          <h3 className="text-2xl sm:text-3xl font-bold mb-3">
-            Ganhe 20% OFF na Primeira Mensalidade
-          </h3>
-          <p className="text-lg mb-6 text-orange-50">
-            Use o cupom <strong className="bg-white/20 px-3 py-1 rounded">APROVADO20</strong> no checkout
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-white text-orange-600 hover:bg-gray-100">
-                Aproveitar Oferta
-              </Button>
-            </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              Indicar um Amigo e Ganhar Desconto
-            </Button>
-          </div>
-          <p className="text-sm mt-4 text-orange-100">
-            Válido apenas para novos usuários. Oferta por tempo limitado.
-          </p>
-        </Card>
       </section>
 
       {/* CTA Section */}
@@ -1873,7 +631,7 @@ export default function Home() {
             Pronto para conquistar sua aprovação?
           </h2>
           <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Comece grátis com 1 redação por mês e veja a diferença na sua escrita
+            Comece grátis com 1 redação por mês, quiz de conhecimento e teste de transcrição
           </p>
           <Link href="/register">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8">
@@ -1907,10 +665,6 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Produto</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#features" className="hover:text-white transition-colors">Recursos</a></li>
-                <li><a href="#metodologia" className="hover:text-white transition-colors">Metodologia</a></li>
-                <li><a href="#concursos" className="hover:text-white transition-colors">Concursos</a></li>
-                <li><a href="#policiais" className="hover:text-white transition-colors">Polícias</a></li>
-                <li><a href="#criterios" className="hover:text-white transition-colors">Critérios</a></li>
                 <li><a href="#plans" className="hover:text-white transition-colors">Planos</a></li>
               </ul>
             </div>
@@ -1919,9 +673,7 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Suporte</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Central de Ajuda</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Contato</a></li>
-                <li><a href="#testimonials" className="hover:text-white transition-colors">Depoimentos</a></li>
               </ul>
             </div>
 
@@ -1930,7 +682,6 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Privacidade</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cookies</a></li>
               </ul>
             </div>
           </div>

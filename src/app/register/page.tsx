@@ -18,10 +18,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,10 +35,85 @@ export default function RegisterPage() {
     acceptTerms: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica de cadastro aqui
-    console.log("Cadastro:", formData);
+    setLoading(true);
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("As senhas não coincidem");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setError("A senha deve ter no mínimo 8 caracteres");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setError("Você precisa aceitar os termos de uso");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // 1. Criar usuário no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          }
+        }
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // 2. Criar registro na tabela users
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id,
+            email: formData.email,
+            name: formData.name,
+            plan: 'free',
+            essays_count: 0,
+            essays_limit: 1
+          });
+
+        if (insertError) {
+          // Se o usuário já existe na tabela, apenas atualize
+          if (insertError.code === '23505') {
+            const { error: updateError } = await supabase
+              .from('users')
+              .update({
+                name: formData.name,
+                email: formData.email
+              })
+              .eq('id', authData.user.id);
+
+            if (updateError) {
+              console.error("Erro ao atualizar dados do usuário:", updateError);
+            }
+          } else {
+            console.error("Erro ao inserir dados do usuário:", insertError);
+            throw insertError;
+          }
+        }
+
+        // 3. Redirecionar para dashboard
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      console.error("Erro no cadastro:", err);
+      setError(err.message || "Erro ao criar conta. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -145,6 +225,12 @@ export default function RegisterPage() {
               </Link>
             </p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Nome Completo */}
@@ -274,9 +360,10 @@ export default function RegisterPage() {
             {/* Botão de Cadastro */}
             <Button 
               type="submit"
+              disabled={loading}
               className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-medium"
             >
-              Criar Conta Grátis
+              {loading ? "Criando conta..." : "Criar Conta Grátis"}
             </Button>
           </form>
 

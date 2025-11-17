@@ -16,16 +16,73 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica de login aqui
-    console.log("Login:", { email, password });
+    setLoading(true);
+    setError("");
+
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        // Mensagens de erro mais amigáveis
+        if (signInError.message.includes("Invalid login credentials")) {
+          throw new Error("E-mail ou senha incorretos. Verifique suas credenciais.");
+        } else if (signInError.message.includes("Email not confirmed")) {
+          throw new Error("Por favor, confirme seu e-mail antes de fazer login.");
+        } else {
+          throw signInError;
+        }
+      }
+
+      if (data.user) {
+        // Verificar se o usuário existe na tabela users
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (userError && userError.code === 'PGRST116') {
+          // Usuário não existe na tabela, criar registro
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: data.user.id,
+              email: data.user.email || email,
+              name: data.user.user_metadata?.name || 'Usuário',
+              plan: 'free',
+              essays_count: 0,
+              essays_limit: 1
+            });
+
+          if (insertError) {
+            console.error("Erro ao criar registro do usuário:", insertError);
+          }
+        }
+
+        router.push("/dashboard");
+      }
+    } catch (err: any) {
+      console.error("Erro no login:", err);
+      setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -118,6 +175,12 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
@@ -188,9 +251,10 @@ export default function LoginPage() {
             {/* Botão de Login */}
             <Button 
               type="submit"
+              disabled={loading}
               className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-medium"
             >
-              Entrar
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
 
