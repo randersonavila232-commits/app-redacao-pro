@@ -27,7 +27,6 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,21 +40,20 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
-    // Validações
     if (formData.password !== formData.confirmPassword) {
-      setError("As senhas não coincidem. Por favor, digite senhas iguais nos dois campos.");
+      setError("As senhas não coincidem");
       setLoading(false);
       return;
     }
 
     if (formData.password.length < 8) {
-      setError("A senha deve ter no mínimo 8 caracteres para garantir a segurança da sua conta.");
+      setError("A senha deve ter no mínimo 8 caracteres");
       setLoading(false);
       return;
     }
 
     if (!formData.acceptTerms) {
-      setError("Você precisa aceitar os termos de uso e política de privacidade para continuar.");
+      setError("Você precisa aceitar os termos de uso");
       setLoading(false);
       return;
     }
@@ -68,17 +66,11 @@ export default function RegisterPage() {
         options: {
           data: {
             name: formData.name,
-          },
-          emailRedirectTo: `${window.location.origin}/onboarding`
+          }
         }
       });
 
-      if (authError) {
-        if (authError.message.includes("already registered")) {
-          throw new Error("Este e-mail já está cadastrado. Faça login ou use outro e-mail.");
-        }
-        throw authError;
-      }
+      if (authError) throw authError;
 
       if (authData.user) {
         // 2. Criar registro na tabela users
@@ -90,8 +82,7 @@ export default function RegisterPage() {
             name: formData.name,
             plan: 'free',
             essays_count: 0,
-            essays_limit: 1,
-            onboarding_completed: false
+            essays_limit: 1
           });
 
         if (insertError) {
@@ -110,20 +101,16 @@ export default function RegisterPage() {
             }
           } else {
             console.error("Erro ao inserir dados do usuário:", insertError);
+            throw insertError;
           }
         }
 
-        // 3. Mostrar mensagem de sucesso
-        setSuccess(true);
-
-        // 4. Redirecionar para onboarding após 2 segundos
-        setTimeout(() => {
-          router.push("/onboarding");
-        }, 2000);
+        // 3. Redirecionar para dashboard
+        router.push("/dashboard");
       }
     } catch (err: any) {
       console.error("Erro no cadastro:", err);
-      setError(err.message || "Erro ao criar conta. Por favor, tente novamente.");
+      setError(err.message || "Erro ao criar conta. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -156,7 +143,7 @@ export default function RegisterPage() {
             </span>
           </div>
 
-          <Badge className="mb-4 bg-green-100 text-green-700 border-green-300">
+          <Badge className="mb-4 bg-green-100 text-green-700">
             <Sparkles className="w-3 h-3 mr-1" />
             Comece Grátis Hoje
           </Badge>
@@ -165,7 +152,7 @@ export default function RegisterPage() {
             Sua aprovação começa aqui!
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Crie sua conta gratuita e tenha acesso a 1 correção por mês. Sem cartão de crédito necessário. Comece a praticar agora mesmo!
+            Crie sua conta gratuita e tenha acesso a 1 correção por mês. Sem cartão de crédito necessário.
           </p>
 
           <div className="space-y-4 mb-8">
@@ -174,7 +161,7 @@ export default function RegisterPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">1 Redação Grátis por Mês</h3>
                 <p className="text-gray-600 text-sm">
-                  Experimente nossa correção inteligente sem compromisso. Veja como funciona antes de assinar!
+                  Experimente nossa correção inteligente sem compromisso
                 </p>
               </div>
             </div>
@@ -184,7 +171,7 @@ export default function RegisterPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Acesso Imediato</h3>
                 <p className="text-gray-600 text-sm">
-                  Comece a praticar assim que criar sua conta. Sem burocracia, sem espera!
+                  Comece a praticar assim que criar sua conta
                 </p>
               </div>
             </div>
@@ -194,7 +181,7 @@ export default function RegisterPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Sem Fidelidade</h3>
                 <p className="text-gray-600 text-sm">
-                  Cancele quando quiser, sem burocracia. Você está no controle!
+                  Cancele quando quiser, sem burocracia
                 </p>
               </div>
             </div>
@@ -204,7 +191,7 @@ export default function RegisterPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Suporte Especializado</h3>
                 <p className="text-gray-600 text-sm">
-                  Tire dúvidas com professores especialistas em redação do ENEM
+                  Tire dúvidas com professores especialistas
                 </p>
               </div>
             </div>
@@ -245,17 +232,6 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                <p className="text-sm text-green-600 font-medium">
-                  Conta criada com sucesso! Redirecionando para começar seu curso...
-                </p>
-              </div>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Nome Completo */}
             <div>
@@ -274,9 +250,6 @@ export default function RegisterPage() {
                   required
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Como você gostaria de ser chamado?
-              </p>
             </div>
 
             {/* Email */}
@@ -296,9 +269,6 @@ export default function RegisterPage() {
                   required
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Use um e-mail válido para receber suas correções
-              </p>
             </div>
 
             {/* Senha */}
@@ -363,9 +333,6 @@ export default function RegisterPage() {
                   )}
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                As senhas devem ser idênticas
-              </p>
             </div>
 
             {/* Termos e Condições */}
@@ -393,10 +360,10 @@ export default function RegisterPage() {
             {/* Botão de Cadastro */}
             <Button 
               type="submit"
-              disabled={loading || success}
+              disabled={loading}
               className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-medium"
             >
-              {loading ? "Criando conta..." : success ? "Conta criada!" : "Criar Conta Grátis"}
+              {loading ? "Criando conta..." : "Criar Conta Grátis"}
             </Button>
           </form>
 
@@ -458,7 +425,7 @@ export default function RegisterPage() {
               RedaçãoPro
             </span>
           </div>
-          <Badge className="mb-3 bg-green-100 text-green-700 border-green-300">
+          <Badge className="mb-3 bg-green-100 text-green-700">
             <Sparkles className="w-3 h-3 mr-1" />
             Comece Grátis
           </Badge>

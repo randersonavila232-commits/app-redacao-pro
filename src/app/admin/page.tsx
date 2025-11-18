@@ -18,17 +18,7 @@ import {
   BarChart3,
   DollarSign,
   UserCheck,
-  AlertCircle,
-  Download,
-  Camera,
-  PenTool,
-  Sparkles,
-  Target,
-  Shield,
-  Crown,
-  Zap,
-  Home,
-  Eye
+  AlertCircle
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -66,22 +56,11 @@ interface User {
   created_at: string;
 }
 
-interface Essay {
-  id: string;
-  user_id: string;
-  title: string;
-  content: string;
-  score: number;
-  feedback: string;
-  status: string;
-  created_at: string;
-}
-
 export default function AdminPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'themes' | 'users' | 'essays' | 'data' | 'access'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'themes' | 'users' | 'essays'>('dashboard');
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
     totalEssays: 0,
@@ -94,7 +73,6 @@ export default function AdminPage() {
   });
   const [themes, setThemes] = useState<Theme[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [essays, setEssays] = useState<Essay[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [editingTheme, setEditingTheme] = useState<Theme | null>(null);
@@ -119,27 +97,22 @@ export default function AdminPage() {
         return;
       }
 
-      // Verificar se é admin na tabela user_roles
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('is_admin')
-        .eq('user_id', authUser.id)
+      // Verificar se é admin (você pode adicionar um campo is_admin na tabela users)
+      const { data: userData } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authUser.id)
         .single();
 
-      if (roleData?.is_admin !== true) {
-        setIsAdmin(false);
-        setLoading(false);
-        return;
-      }
-
+      // Por enquanto, vamos permitir acesso a todos usuários autenticados
+      // Em produção, adicione verificação: if (userData?.is_admin !== true)
       setIsAdmin(true);
       loadStats();
       loadThemes();
       loadUsers();
-      loadEssays();
     } catch (error) {
       console.error("Erro:", error);
-      setIsAdmin(false);
+      router.push("/login");
     } finally {
       setLoading(false);
     }
@@ -222,21 +195,6 @@ export default function AdminPage() {
       }
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
-    }
-  };
-
-  const loadEssays = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('essays')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        setEssays(data);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar redações:", error);
     }
   };
 
@@ -369,45 +327,6 @@ export default function AdminPage() {
     }
   };
 
-  const handleExportData = async (table: string) => {
-    try {
-      let data;
-      
-      switch(table) {
-        case 'users':
-          const { data: usersData } = await supabase.from('users').select('*');
-          data = usersData;
-          break;
-        case 'essays':
-          const { data: essaysData } = await supabase.from('essays').select('*');
-          data = essaysData;
-          break;
-        case 'themes':
-          const { data: themesData } = await supabase.from('themes').select('*');
-          data = themesData;
-          break;
-        default:
-          return;
-      }
-
-      if (!data) return;
-
-      const json = JSON.stringify(data, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${table}_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Erro ao exportar dados:", error);
-      alert("Erro ao exportar dados. Tente novamente.");
-    }
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/");
@@ -451,11 +370,6 @@ export default function AdminPage() {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredEssays = essays.filter(essay =>
-    essay.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    essay.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50">
       {/* Navbar */}
@@ -464,23 +378,14 @@ export default function AdminPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
+                <Settings className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Admin Panel
               </span>
-              <Badge className="ml-2 bg-red-600 text-white">
-                Acesso Total
-              </Badge>
             </div>
 
             <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost">
-                  <Home className="w-4 h-4 mr-2" />
-                  Página Inicial
-                </Button>
-              </Link>
               <Link href="/dashboard">
                 <Button variant="ghost">
                   <Award className="w-4 h-4 mr-2" />
@@ -508,14 +413,6 @@ export default function AdminPage() {
             Dashboard
           </Button>
           <Button
-            variant={activeTab === 'access' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('access')}
-            className={activeTab === 'access' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : ''}
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            Acesso Total
-          </Button>
-          <Button
             variant={activeTab === 'themes' ? 'default' : 'outline'}
             onClick={() => setActiveTab('themes')}
             className={activeTab === 'themes' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : ''}
@@ -530,22 +427,6 @@ export default function AdminPage() {
           >
             <Users className="w-4 h-4 mr-2" />
             Usuários
-          </Button>
-          <Button
-            variant={activeTab === 'essays' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('essays')}
-            className={activeTab === 'essays' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : ''}
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            Redações
-          </Button>
-          <Button
-            variant={activeTab === 'data' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('data')}
-            className={activeTab === 'data' ? 'bg-gradient-to-r from-blue-600 to-purple-600' : ''}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Exportar Dados
           </Button>
         </div>
 
@@ -630,155 +511,6 @@ export default function AdminPage() {
                 <p className="text-sm text-gray-600">usuários</p>
               </Card>
             </div>
-          </div>
-        )}
-
-        {/* Acesso Total Tab */}
-        {activeTab === 'access' && (
-          <div>
-            <h2 className="text-3xl font-bold mb-6">Acesso Total às Funcionalidades</h2>
-            <p className="text-gray-600 mb-8">Como administrador, você tem acesso completo a todas as funcionalidades do site.</p>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Página Inicial */}
-              <Link href="/">
-                <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-blue-300">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <Home className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">Página Inicial</h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    Acesse a landing page com todas as informações sobre planos e recursos
-                  </p>
-                  <Badge className="bg-green-100 text-green-700">Acesso Total</Badge>
-                </Card>
-              </Link>
-
-              {/* Dashboard do Usuário */}
-              <Link href="/dashboard">
-                <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-purple-300">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                    <Award className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">Dashboard</h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    Visualize o dashboard como um usuário comum veria
-                  </p>
-                  <Badge className="bg-green-100 text-green-700">Acesso Total</Badge>
-                </Card>
-              </Link>
-
-              {/* Escrever Redação */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-green-300">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <PenTool className="w-6 h-6 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Escrever Redação</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Acesso ilimitado para escrever e corrigir redações
-                </p>
-                <Badge className="bg-green-100 text-green-700">Ilimitado</Badge>
-              </Card>
-
-              {/* Transcrição por Câmera */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-orange-300">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                  <Camera className="w-6 h-6 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Transcrição por Câmera</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Use OCR avançado para transcrever redações manuscritas
-                </p>
-                <Badge className="bg-green-100 text-green-700">Ilimitado</Badge>
-              </Card>
-
-              {/* Gerador de Redações IA */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-pink-300">
-                <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
-                  <Sparkles className="w-6 h-6 text-pink-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Gerador de Redações IA</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Gere redações completas com inteligência artificial
-                </p>
-                <Badge className="bg-green-100 text-green-700">Ilimitado</Badge>
-              </Card>
-
-              {/* Todos os Temas */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-indigo-300">
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-indigo-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Todos os Temas</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Acesso completo ao banco de temas de ENEM, concursos e vestibulares
-                </p>
-                <Badge className="bg-green-100 text-green-700">Acesso Total</Badge>
-              </Card>
-
-              {/* Relatórios e Estatísticas */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-cyan-300">
-                <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6 text-cyan-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Relatórios Completos</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Visualize estatísticas detalhadas de todos os usuários
-                </p>
-                <Badge className="bg-green-100 text-green-700">Acesso Total</Badge>
-              </Card>
-
-              {/* Gerenciar Usuários */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-red-300">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-red-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Gerenciar Usuários</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Edite planos, visualize dados e gerencie todos os usuários
-                </p>
-                <Badge className="bg-green-100 text-green-700">Acesso Total</Badge>
-              </Card>
-
-              {/* Exportar Dados */}
-              <Card className="p-6 hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-yellow-300">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
-                  <Download className="w-6 h-6 text-yellow-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Exportar Dados</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Exporte todos os dados do sistema em formato JSON
-                </p>
-                <Badge className="bg-green-100 text-green-700">Acesso Total</Badge>
-              </Card>
-            </div>
-
-            <Card className="p-8 mt-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-              <div className="flex items-start gap-4">
-                <Shield className="w-12 h-12 flex-shrink-0" />
-                <div>
-                  <h3 className="text-2xl font-bold mb-2">Privilégios de Administrador</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-center gap-2">
-                      <Crown className="w-5 h-5" />
-                      <span>Acesso ilimitado a todas as funcionalidades premium</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Zap className="w-5 h-5" />
-                      <span>Sem restrições de uso ou limites de redações</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Target className="w-5 h-5" />
-                      <span>Visualização e edição de todos os dados do sistema</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Download className="w-5 h-5" />
-                      <span>Exportação completa de dados em qualquer formato</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </Card>
           </div>
         )}
 
@@ -894,8 +626,6 @@ export default function AdminPage() {
                       <h3 className="text-lg font-bold mb-1">{user.name}</h3>
                       <p className="text-sm text-gray-600 mb-2">{user.email}</p>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <span>ID: {user.id}</span>
-                        <span>•</span>
                         <span>Redações: {user.essays_count}/{user.essays_limit === 999999 ? '∞' : user.essays_limit}</span>
                         <span>•</span>
                         <span>Cadastro: {new Date(user.created_at).toLocaleDateString('pt-BR')}</span>
@@ -925,141 +655,6 @@ export default function AdminPage() {
                 </Card>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Essays Tab */}
-        {activeTab === 'essays' && (
-          <div>
-            <h2 className="text-3xl font-bold mb-6">Todas as Redações</h2>
-
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Buscar redações..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {filteredEssays.map((essay) => (
-                <Card key={essay.id} className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold mb-2">{essay.title}</h3>
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{essay.content}</p>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <span>Usuário: {essay.user_id}</span>
-                        <span>•</span>
-                        <span>Data: {new Date(essay.created_at).toLocaleDateString('pt-BR')}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge className={
-                        essay.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        essay.status === 'corrected' ? 'bg-green-100 text-green-700' :
-                        'bg-gray-100 text-gray-700'
-                      }>
-                        {essay.status === 'pending' ? 'Pendente' : 'Corrigida'}
-                      </Badge>
-                      {essay.score && (
-                        <div className="text-2xl font-bold text-blue-600">
-                          {essay.score}/1000
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {essay.feedback && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm font-medium mb-2">Feedback:</p>
-                      <p className="text-sm text-gray-600">{essay.feedback}</p>
-                    </div>
-                  )}
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Data Export Tab */}
-        {activeTab === 'data' && (
-          <div>
-            <h2 className="text-3xl font-bold mb-6">Exportar Dados</h2>
-            
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Users className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold">Usuários</h3>
-                    <p className="text-sm text-gray-600">{stats.totalUsers} registros</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => handleExportData('users')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar JSON
-                </Button>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold">Redações</h3>
-                    <p className="text-sm text-gray-600">{stats.totalEssays} registros</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => handleExportData('essays')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar JSON
-                </Button>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold">Temas</h3>
-                    <p className="text-sm text-gray-600">{stats.totalThemes} registros</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => handleExportData('themes')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar JSON
-                </Button>
-              </Card>
-            </div>
-
-            <Card className="p-6 mt-6">
-              <h3 className="text-xl font-bold mb-4">Informações sobre Exportação</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>• Os dados são exportados no formato JSON</li>
-                <li>• Todos os campos das tabelas são incluídos</li>
-                <li>• O arquivo é baixado automaticamente no seu navegador</li>
-                <li>• Nome do arquivo: [tabela]_[data].json</li>
-                <li>• Você tem acesso total a todos os dados do sistema</li>
-              </ul>
-            </Card>
           </div>
         )}
       </div>

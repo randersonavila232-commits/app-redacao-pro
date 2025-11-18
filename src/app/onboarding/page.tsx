@@ -9,11 +9,8 @@ import {
   CheckCircle2,
   ArrowRight,
   Brain,
-  Target,
-  BookOpen,
   Lightbulb,
-  TrendingUp,
-  Sparkles
+  XCircle
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -154,6 +151,61 @@ export default function OnboardingPage() {
       ],
       correct: 1,
       explanation: "Evite usar 1ª pessoa (eu, nós) e expressões como 'eu acho', 'na minha opinião'. Use 3ª pessoa e linguagem impessoal."
+    },
+    {
+      question: "Qual conectivo é adequado para introduzir uma conclusão?",
+      options: [
+        "Entretanto",
+        "Portanto",
+        "Além disso",
+        "Por exemplo"
+      ],
+      correct: 1,
+      explanation: "Conectivos conclusivos como 'portanto', 'logo', 'assim' e 'por conseguinte' são ideais para iniciar a conclusão."
+    },
+    {
+      question: "O que é um argumento de autoridade?",
+      options: [
+        "Usar sua própria opinião",
+        "Citar especialistas, estudos ou dados oficiais",
+        "Criticar autoridades",
+        "Usar linguagem autoritária"
+      ],
+      correct: 1,
+      explanation: "Argumento de autoridade é quando você cita especialistas, pesquisadores, dados oficiais ou estudos para fundamentar seu ponto de vista."
+    },
+    {
+      question: "Qual é o erro mais comum na introdução?",
+      options: [
+        "Ser muito específica",
+        "Apresentar a tese claramente",
+        "Copiar trechos dos textos motivadores",
+        "Contextualizar o tema"
+      ],
+      correct: 2,
+      explanation: "Copiar trechos dos textos motivadores é um erro grave que pode reduzir sua nota. A introdução deve ser autoral e contextualizar o tema com suas próprias palavras."
+    },
+    {
+      question: "Quantos argumentos diferentes você deve apresentar no desenvolvimento?",
+      options: [
+        "1 argumento repetido em todos os parágrafos",
+        "2 a 3 argumentos diferentes",
+        "5 ou mais argumentos",
+        "Não precisa de argumentos"
+      ],
+      correct: 1,
+      explanation: "O ideal é apresentar 2 a 3 argumentos diferentes e bem desenvolvidos, cada um em seu próprio parágrafo de desenvolvimento."
+    },
+    {
+      question: "O que significa 'tangenciar o tema'?",
+      options: [
+        "Abordar o tema de forma completa",
+        "Falar sobre assuntos relacionados mas não abordar o tema central",
+        "Usar linguagem técnica",
+        "Escrever de forma objetiva"
+      ],
+      correct: 1,
+      explanation: "Tangenciar é falar 'em volta' do tema sem abordá-lo diretamente. Isso pode resultar em nota baixa ou até zero."
     }
   ];
 
@@ -176,19 +228,7 @@ export default function OnboardingPage() {
   };
 
   const handleContinue = async () => {
-    // Salvar progresso do quiz no banco
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from('users')
-        .update({ 
-          onboarding_completed: true,
-          quiz_score: score 
-        })
-        .eq('id', user.id);
-    }
-
-    router.push("/curso");
+    router.push("/dashboard");
   };
 
   const progress = ((currentStep + 1) / quizQuestions.length) * 100;
@@ -197,25 +237,31 @@ export default function OnboardingPage() {
     const percentage = (score / quizQuestions.length) * 100;
     let message = "";
     let color = "";
+    let emoji = "";
 
     if (percentage >= 80) {
       message = "Excelente! Você domina os conceitos básicos de redação!";
       color = "text-green-600";
+      emoji = "🎉";
     } else if (percentage >= 60) {
       message = "Muito bom! Você tem uma boa base, mas ainda pode melhorar!";
       color = "text-blue-600";
+      emoji = "👏";
     } else if (percentage >= 40) {
       message = "Bom começo! Vamos trabalhar juntos para aprimorar seus conhecimentos!";
       color = "text-orange-600";
+      emoji = "💪";
     } else {
       message = "Não se preocupe! Estamos aqui para te ajudar a evoluir!";
       color = "text-purple-600";
+      emoji = "🚀";
     }
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-        <Card className="max-w-2xl w-full p-8">
+        <Card className="max-w-3xl w-full p-8">
           <div className="text-center mb-8">
+            <div className="text-6xl mb-4">{emoji}</div>
             <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Award className="w-10 h-10 text-white" />
             </div>
@@ -228,67 +274,131 @@ export default function OnboardingPage() {
           </div>
 
           <div className="mb-8">
-            <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="flex items-center justify-center gap-8 mb-6">
               <div className="text-center">
-                <div className="text-5xl font-bold text-blue-600 mb-2">
-                  {score}/{quizQuestions.length}
+                <div className="text-6xl font-bold text-blue-600 mb-2">
+                  {score}
                 </div>
                 <p className="text-sm text-gray-600">Acertos</p>
               </div>
               <div className="text-center">
-                <div className="text-5xl font-bold text-purple-600 mb-2">
+                <div className="text-6xl font-bold text-purple-600 mb-2">
                   {percentage.toFixed(0)}%
                 </div>
                 <p className="text-sm text-gray-600">Aproveitamento</p>
               </div>
+              <div className="text-center">
+                <div className="text-6xl font-bold text-red-600 mb-2">
+                  {quizQuestions.length - score}
+                </div>
+                <p className="text-sm text-gray-600">Erros</p>
+              </div>
             </div>
 
-            <div className="bg-gray-100 rounded-full h-4 mb-4">
+            <div className="bg-gray-100 rounded-full h-6 mb-4">
               <div 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 h-4 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 h-6 rounded-full transition-all duration-500 flex items-center justify-center"
                 style={{ width: `${percentage}%` }}
-              />
+              >
+                <span className="text-white text-xs font-bold">{percentage.toFixed(0)}%</span>
+              </div>
             </div>
 
-            <p className={`text-center text-lg font-semibold ${color}`}>
+            <p className={`text-center text-xl font-semibold ${color} mb-6`}>
               {message}
             </p>
           </div>
 
-          <div className="space-y-4 mb-8">
-            <h3 className="font-bold text-gray-900 mb-3">Suas Respostas:</h3>
-            {quizQuestions.map((q, index) => (
-              <Card key={index} className={`p-4 ${answers[index] === q.correct ? 'border-2 border-green-500 bg-green-50' : 'border-2 border-red-500 bg-red-50'}`}>
-                <div className="flex items-start gap-3">
-                  {answers[index] === q.correct ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full border-2 border-red-600 mt-1 flex-shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900 mb-2">{q.question}</p>
-                    <p className="text-sm text-gray-600 mb-1">
-                      <strong>Sua resposta:</strong> {q.options[answers[index]]}
-                    </p>
-                    {answers[index] !== q.correct && (
-                      <p className="text-sm text-green-700 mb-1">
-                        <strong>Resposta correta:</strong> {q.options[q.correct]}
-                      </p>
+          <div className="space-y-4 mb-8 max-h-96 overflow-y-auto pr-2">
+            <h3 className="font-bold text-gray-900 mb-3 text-lg sticky top-0 bg-white py-2">
+              Revisão das Suas Respostas:
+            </h3>
+            {quizQuestions.map((q, index) => {
+              const isCorrect = answers[index] === q.correct;
+              return (
+                <Card 
+                  key={index} 
+                  className={`p-4 ${
+                    isCorrect 
+                      ? 'border-2 border-green-500 bg-green-50' 
+                      : 'border-2 border-red-500 bg-red-50'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {isCorrect ? (
+                      <CheckCircle2 className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-red-600 mt-1 flex-shrink-0" />
                     )}
-                    <p className="text-sm text-gray-700 italic">
-                      {q.explanation}
-                    </p>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <p className="font-bold text-gray-900">
+                          {index + 1}. {q.question}
+                        </p>
+                        <Badge className={isCorrect ? 'bg-green-600' : 'bg-red-600'}>
+                          {isCorrect ? 'Correto' : 'Errado'}
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-2 mb-3">
+                        <p className="text-sm">
+                          <strong className={isCorrect ? 'text-green-700' : 'text-red-700'}>
+                            Sua resposta:
+                          </strong>{" "}
+                          {q.options[answers[index]]}
+                        </p>
+                        {!isCorrect && (
+                          <p className="text-sm">
+                            <strong className="text-green-700">
+                              Resposta correta:
+                            </strong>{" "}
+                            {q.options[q.correct]}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="bg-white/50 p-3 rounded-lg border border-gray-200">
+                        <p className="text-sm text-gray-700">
+                          <strong>💡 Explicação:</strong> {q.explanation}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
+          </div>
+
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-blue-200 mb-6">
+            <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-yellow-600" />
+              Próximos Passos
+            </h3>
+            <p className="text-gray-700 mb-4">
+              Agora que você conhece seu nível, vamos começar o curso completo de redação! 
+              Você terá acesso a videoaulas, exercícios práticos e correções detalhadas.
+            </p>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                Módulos estruturados do básico ao avançado
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                Exercícios práticos após cada aula
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                Correções detalhadas das suas redações
+              </li>
+            </ul>
           </div>
 
           <Button 
             onClick={handleContinue}
-            className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg"
+            className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-bold"
           >
-            Continuar para o Curso
+            Ir para o Dashboard
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </Card>
@@ -303,13 +413,13 @@ export default function OnboardingPage() {
         <div className="text-center mb-8">
           <Badge className="mb-4 bg-blue-100 text-blue-700">
             <Brain className="w-3 h-3 mr-1" />
-            Avaliação Inicial
+            Avaliação Inicial - {quizQuestions.length} Questões
           </Badge>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Olá, {userName}! Vamos conhecer seu nível
+            Olá, {userName}! Vamos conhecer seu nível 📚
           </h1>
           <p className="text-gray-600">
-            Responda estas perguntas para personalizarmos sua experiência
+            Responda estas perguntas para personalizarmos sua experiência de aprendizado
           </p>
         </div>
 
@@ -320,15 +430,18 @@ export default function OnboardingPage() {
               Questão {currentStep + 1} de {quizQuestions.length}
             </span>
             <span className="text-sm font-medium text-blue-600">
-              {progress.toFixed(0)}%
+              {progress.toFixed(0)}% concluído
             </span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-3" />
         </div>
 
         {/* Question Card */}
-        <Card className="p-8 shadow-xl">
+        <Card className="p-8 shadow-xl border-2 border-blue-200">
           <div className="mb-6">
+            <Badge className="mb-3 bg-purple-100 text-purple-700">
+              Questão {currentStep + 1}
+            </Badge>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               {quizQuestions[currentStep].question}
             </h2>
@@ -339,14 +452,14 @@ export default function OnboardingPage() {
               <Button
                 key={index}
                 variant="outline"
-                className="w-full justify-start text-left h-auto py-4 px-6 hover:bg-blue-50 hover:border-blue-500 transition-all"
+                className="w-full justify-start text-left h-auto py-4 px-6 hover:bg-blue-50 hover:border-blue-500 transition-all border-2"
                 onClick={() => handleAnswer(index)}
               >
                 <span className="flex items-center gap-3 w-full">
-                  <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center flex-shrink-0">
+                  <span className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold flex items-center justify-center flex-shrink-0 text-lg">
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span className="flex-1">{option}</span>
+                  <span className="flex-1 text-base">{option}</span>
                 </span>
               </Button>
             ))}
@@ -354,9 +467,11 @@ export default function OnboardingPage() {
         </Card>
 
         {/* Tips */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600">
-          <Lightbulb className="w-4 h-4" />
-          <span>Não se preocupe, não há resposta errada! Queremos apenas conhecer você melhor.</span>
+        <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+          <Lightbulb className="w-5 h-5 text-yellow-600" />
+          <span>
+            <strong>Dica:</strong> Não se preocupe com erros! Este quiz é apenas para conhecermos seu nível inicial.
+          </span>
         </div>
       </div>
     </div>
