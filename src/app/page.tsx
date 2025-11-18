@@ -396,7 +396,380 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section com Métodos de Pagamento */}
+      {/* Features Section */}
+      <section id="features" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-purple-100 text-purple-700">
+            Recursos Principais
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Tudo que você precisa para conquistar a nota máxima
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Ferramentas profissionais desenvolvidas com tecnologia de ponta e metodologia comprovada
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <Sparkles className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Correção com IA</h3>
+            <p className="text-gray-600">
+              Análise detalhada baseada nos critérios oficiais do ENEM e principais concursos públicos
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+              <Camera className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Transcrição por Câmera</h3>
+            <p className="text-gray-600">
+              OCR avançado que transcreve sua redação manuscrita em segundos com 99% de precisão
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+              <Target className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Temas Atualizados</h3>
+            <p className="text-gray-600">
+              Banco com centenas de temas relevantes e atualizados semanalmente
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+              <BarChart3 className="w-6 h-6 text-orange-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Relatórios de Evolução</h3>
+            <p className="text-gray-600">
+              Acompanhe seu progresso com gráficos detalhados e insights personalizados
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+              <BookOpen className="w-6 h-6 text-red-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Guias Completos</h3>
+            <p className="text-gray-600">
+              Material didático exclusivo com técnicas e estratégias de redação
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+              <Users className="w-6 h-6 text-indigo-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Comunidade Ativa</h3>
+            <p className="text-gray-600">
+              Conecte-se com outros estudantes e professores especializados
+            </p>
+          </Card>
+        </div>
+      </section>
+
+      {/* Metodologia Section */}
+      <section id="metodologia" className="bg-gray-50 py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-blue-100 text-blue-700">
+              Nossa Metodologia
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Aprovada por mais de 50 mil estudantes
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Sistema estruturado em 4 pilares fundamentais para sua aprovação
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                1
+              </div>
+              <h3 className="text-xl font-bold mb-3">Diagnóstico</h3>
+              <p className="text-gray-600">
+                Avaliação inicial para identificar seus pontos fortes e áreas de melhoria
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                2
+              </div>
+              <h3 className="text-xl font-bold mb-3">Prática Guiada</h3>
+              <p className="text-gray-600">
+                Exercícios progressivos com feedback imediato e personalizado
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                3
+              </div>
+              <h3 className="text-xl font-bold mb-3">Correção Detalhada</h3>
+              <p className="text-gray-600">
+                Análise completa com sugestões específicas para cada competência
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                4
+              </div>
+              <h3 className="text-xl font-bold mb-3">Evolução Contínua</h3>
+              <p className="text-gray-600">
+                Acompanhamento do progresso com metas e desafios personalizados
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Concursos Section */}
+      <section id="concursos" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-green-100 text-green-700">
+            Concursos Públicos
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Preparação específica para cada concurso
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Critérios de correção adaptados para os principais concursos do Brasil
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-bold">ENEM</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Correção baseada nas 5 competências oficiais com nota de 0 a 1000
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Briefcase className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold">Tribunais</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              TRF, TRT, TJ - Critérios específicos de cada banca examinadora
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <Building2 className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold">Ministérios</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              MPU, MPF, MP Estaduais - Foco em argumentação jurídica
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <School className="w-6 h-6 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-bold">Vestibulares</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              FUVEST, UNICAMP, UFRJ - Critérios específicos de cada universidade
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-bold">Fiscais</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Receita Federal, SEFAZ, ISS - Ênfase em clareza e objetividade
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <Award className="w-6 h-6 text-indigo-600" />
+              </div>
+              <h3 className="text-lg font-bold">Diplomacia</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              CACD - Análise aprofundada de geopolítica e relações internacionais
+            </p>
+          </Card>
+        </div>
+      </section>
+
+      {/* Polícias Section */}
+      <section id="policiais" className="bg-gray-50 py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-red-100 text-red-700">
+              Carreiras Policiais
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Preparação específica para carreiras policiais
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Critérios adaptados para os principais concursos da área de segurança pública
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <Card className="p-6 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-bold mb-2">Polícia Federal</h3>
+              <p className="text-gray-600 text-sm">
+                Agente, Escrivão, Delegado - Foco em argumentação e conhecimentos específicos
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold mb-2">Polícia Civil</h3>
+              <p className="text-gray-600 text-sm">
+                PC-SP, PC-RJ, PC-MG e outros estados - Critérios específicos por estado
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold mb-2">Polícia Militar</h3>
+              <p className="text-gray-600 text-sm">
+                PM-SP, PM-RJ, PM-MG - Ênfase em disciplina e hierarquia
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-bold mb-2">PRF e Outras</h3>
+              <p className="text-gray-600 text-sm">
+                Polícia Rodoviária Federal, Penal e outras carreiras de segurança
+              </p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Critérios Section */}
+      <section id="criterios" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-purple-100 text-purple-700">
+            Critérios de Avaliação
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Análise completa em todas as competências
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Nossa IA avalia sua redação seguindo os mesmos critérios dos avaliadores oficiais
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <CheckSquare className="w-5 h-5 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-bold">Competência 1</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Domínio da norma padrão da língua portuguesa
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Brain className="w-5 h-5 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold">Competência 2</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Compreensão e aplicação de conceitos das áreas de conhecimento
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <Lightbulb className="w-5 h-5 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold">Competência 3</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Capacidade de selecionar e organizar argumentos
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <PenTool className="w-5 h-5 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-bold">Competência 4</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Conhecimento dos mecanismos linguísticos de coesão textual
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <Target className="w-5 h-5 text-red-600" />
+              </div>
+              <h3 className="text-lg font-bold">Competência 5</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Elaboração de proposta de intervenção respeitando direitos humanos
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <LineChart className="w-5 h-5 text-indigo-600" />
+              </div>
+              <h3 className="text-lg font-bold">Análise Geral</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Avaliação holística considerando estrutura, clareza e impacto
+            </p>
+          </Card>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
       <section id="plans" className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 bg-gray-50">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-green-100 text-green-700">
@@ -406,7 +779,7 @@ export default function Home() {
             Escolha o plano ideal para você
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Todos os planos com pagamento via PIX ou Cartão de Crédito (parcelamento em até 12x)
+            Todos os planos com pagamento via PIX (5% desconto) ou Cartão de Crédito (até 12x sem juros)
           </p>
         </div>
 
@@ -492,9 +865,9 @@ export default function Home() {
                 <CreditCard className="w-4 h-4" />
                 <span>Cartão de crédito (até 12x)</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>PIX (5% desconto)</span>
+                <span>PIX com 5% de desconto</span>
               </div>
             </div>
 
@@ -546,9 +919,9 @@ export default function Home() {
                 <CreditCard className="w-4 h-4" />
                 <span>Cartão de crédito (até 12x)</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>PIX (5% desconto)</span>
+                <span>PIX com 5% de desconto</span>
               </div>
             </div>
 
@@ -600,9 +973,9 @@ export default function Home() {
                 <CreditCard className="w-4 h-4" />
                 <span>Cartão de crédito (até 12x)</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>PIX (5% desconto)</span>
+                <span>PIX com 5% de desconto</span>
               </div>
             </div>
 
@@ -619,7 +992,144 @@ export default function Home() {
         <div className="mt-12 text-center">
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-6 py-3 rounded-full">
             <CreditCard className="w-5 h-5" />
-            <span className="font-medium">Aceitamos PIX e Cartão de Crédito em até 12x sem juros</span>
+            <span className="font-medium">Aceitamos PIX (5% desconto) e Cartão de Crédito em até 12x sem juros</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-yellow-100 text-yellow-700">
+            Depoimentos
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            O que nossos alunos dizem
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Histórias reais de estudantes que conquistaram suas aprovações
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <Card className="p-6">
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "Consegui aumentar minha nota em 180 pontos em apenas 2 meses! A correção detalhada me ajudou a entender exatamente onde eu precisava melhorar."
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-blue-600 font-bold">MC</span>
+              </div>
+              <div>
+                <p className="font-semibold">Maria Clara</p>
+                <p className="text-sm text-gray-600">Aprovada no ENEM 2023</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "A transcrição por câmera é incrível! Economizo muito tempo e posso praticar mais redações. Passei em 1º lugar no concurso da Polícia Federal."
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 font-bold">RS</span>
+              </div>
+              <div>
+                <p className="font-semibold">Rafael Santos</p>
+                <p className="text-sm text-gray-600">Agente da Polícia Federal</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-gray-700 mb-4">
+              "Como professora, uso a plataforma com meus 40 alunos. Os relatórios me ajudam a acompanhar o progresso de cada um individualmente."
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-purple-600 font-bold">AL</span>
+              </div>
+              <div>
+                <p className="font-semibold">Ana Luísa</p>
+                <p className="text-sm text-gray-600">Professora de Redação</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="bg-gray-50 py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-blue-100 text-blue-700">
+              Perguntas Frequentes
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Tire suas dúvidas
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Respostas para as perguntas mais comuns sobre a plataforma
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-4">
+            {[
+              {
+                q: "Como funciona a correção com IA?",
+                a: "Nossa IA foi treinada com milhares de redações corrigidas por especialistas. Ela analisa seu texto seguindo os mesmos critérios dos avaliadores oficiais do ENEM e principais concursos, fornecendo feedback detalhado em cada competência."
+              },
+              {
+                q: "A transcrição por câmera funciona com qualquer letra?",
+                a: "Sim! Nosso OCR avançado consegue reconhecer diferentes tipos de caligrafia com 99% de precisão. Basta tirar uma foto clara da sua redação manuscrita e o sistema transcreve automaticamente."
+              },
+              {
+                q: "Posso cancelar minha assinatura a qualquer momento?",
+                a: "Sim, não há fidelidade. Você pode cancelar sua assinatura quando quiser através do painel de configurações. O acesso permanece até o fim do período já pago."
+              },
+              {
+                q: "Os temas são atualizados com que frequência?",
+                a: "Adicionamos novos temas semanalmente, sempre baseados em acontecimentos atuais e temas recorrentes em concursos. Você tem acesso a um banco com centenas de temas relevantes."
+              },
+              {
+                q: "Como funciona o plano Professor/Escola?",
+                a: "O plano permite gerenciar até 50 alunos, com painel administrativo para acompanhar o progresso de cada um, criar turmas, atribuir temas específicos e gerar relatórios consolidados."
+              }
+            ].map((faq, index) => (
+              <Card 
+                key={index}
+                className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => setOpenFaq(openFaq === index ? null : index)}
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">{faq.q}</h3>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-gray-500 transition-transform ${
+                      openFaq === index ? 'rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                {openFaq === index && (
+                  <p className="text-gray-600 mt-4">{faq.a}</p>
+                )}
+              </Card>
+            ))}
           </div>
         </div>
       </section>

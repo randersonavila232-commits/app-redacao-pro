@@ -41,9 +41,9 @@ export default function LoginPage() {
       if (signInError) {
         // Mensagens de erro mais amigáveis
         if (signInError.message.includes("Invalid login credentials")) {
-          throw new Error("E-mail ou senha incorretos. Verifique suas credenciais.");
+          throw new Error("E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.");
         } else if (signInError.message.includes("Email not confirmed")) {
-          throw new Error("Por favor, confirme seu e-mail antes de fazer login.");
+          throw new Error("Por favor, confirme seu e-mail antes de fazer login. Verifique sua caixa de entrada.");
         } else {
           throw signInError;
         }
@@ -75,11 +75,12 @@ export default function LoginPage() {
           }
         }
 
+        // Redirecionar para dashboard
         router.push("/dashboard");
       }
     } catch (err: any) {
       console.error("Erro no login:", err);
-      setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
+      setError(err.message || "Erro ao fazer login. Verifique suas credenciais e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -112,7 +113,7 @@ export default function LoginPage() {
             Bem-vindo de volta!
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Continue sua jornada rumo à aprovação. Acesse sua conta e pratique suas redações.
+            Continue sua jornada rumo à aprovação. Acesse sua conta e pratique suas redações com correções detalhadas e feedback personalizado.
           </p>
 
           <div className="space-y-4">
@@ -121,7 +122,7 @@ export default function LoginPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Correções Instantâneas</h3>
                 <p className="text-gray-600 text-sm">
-                  Receba feedback detalhado em até 2 minutos com análise de 50+ critérios
+                  Receba feedback detalhado em até 2 minutos com análise de 50+ critérios de avaliação do ENEM
                 </p>
               </div>
             </div>
@@ -131,7 +132,7 @@ export default function LoginPage() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-1">Acompanhe sua Evolução</h3>
                 <p className="text-gray-600 text-sm">
-                  Veja seu progresso em gráficos detalhados e relatórios personalizados
+                  Veja seu progresso em gráficos detalhados e relatórios personalizados que mostram suas melhorias
                 </p>
               </div>
             </div>
@@ -139,9 +140,9 @@ export default function LoginPage() {
             <div className="flex items-start gap-3">
               <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-bold text-gray-900 mb-1">Acesso Total</h3>
+                <h3 className="font-bold text-gray-900 mb-1">Acesso Total ao Conteúdo</h3>
                 <p className="text-gray-600 text-sm">
-                  Temas atualizados, banco de repertórios e redações modelo
+                  Temas atualizados semanalmente, banco de repertórios culturais e redações modelo nota 1000
                 </p>
               </div>
             </div>
@@ -153,12 +154,12 @@ export default function LoginPage() {
                 MC
               </div>
               <div>
-                <p className="font-bold text-gray-900">Maria Clara</p>
-                <p className="text-sm text-gray-600">Aprovada no ENEM 2023</p>
+                <p className="font-bold text-gray-900">Maria Clara Silva</p>
+                <p className="text-sm text-gray-600">Aprovada em Medicina - ENEM 2023</p>
               </div>
             </div>
             <p className="text-gray-700 italic">
-              "A plataforma me ajudou a evoluir 240 pontos em 2 meses! As correções são muito detalhadas e me mostraram exatamente onde melhorar."
+              "A plataforma me ajudou a evoluir 240 pontos em apenas 2 meses! As correções são muito detalhadas e me mostraram exatamente onde melhorar. Consegui minha aprovação graças ao RedaçãoPro!"
             </p>
           </div>
         </div>
@@ -199,6 +200,9 @@ export default function LoginPage() {
                   required
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Digite o e-mail que você usou no cadastro
+              </p>
             </div>
 
             {/* Senha */}
@@ -207,7 +211,7 @@ export default function LoginPage() {
                 <Label htmlFor="password" className="text-gray-900 font-medium">
                   Senha
                 </Label>
-                <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+                <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                   Esqueceu a senha?
                 </Link>
               </div>
@@ -234,6 +238,9 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Sua senha tem no mínimo 8 caracteres
+              </p>
             </div>
 
             {/* Lembrar-me */}
